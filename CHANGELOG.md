@@ -1,5 +1,13 @@
 # Değişiklik kaydı
 
+## v5.2 — GitHub Releases ve demo GIF
+
+- `demo.gif` eklendi: boş durum, sonuç tablosu, renkli klavye haritası ve
+  tamamlanmış test akışını gösteren 7 karelik kısa animasyon.
+- README'ye demo görseli ve son sürümü indirme bağlantısı eklendi.
+- GitHub Releases'da `v5.2` sürümü oluşturuldu; `Klavye Testi.exe` sürüm
+  varlığı olarak yüklendi.
+
 ## v5.1 — Yeni UI için ortak bug turu (OpenCode + Copilot)
 
 v5'te eklenen görsel öğeler hedef alındı. Copilot statik/UI, OpenCode dinamik

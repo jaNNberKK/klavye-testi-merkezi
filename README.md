@@ -8,6 +8,10 @@ sırayla** sorulur; alfabetik sıra kullanılmaz.
 
 ![Ana ekran](ekran-goruntusu.png)
 
+### Kısa demo
+
+![Demo](demo.gif)
+
 ## Özellikler
 
 - **104 adımlı test:** Fonksiyon tuşlarından sayısal takıma kadar tüm tuşlar.
@@ -30,6 +34,8 @@ sırayla** sorulur; alfabetik sıra kullanılmaz.
 ![Klavye haritası](klavye-haritasi.png)
 
 ## Başlatma
+
+`Klavye Testi.exe` dosyasını [son sürümden](https://github.com/jaNNberKK/klavye-testi-merkezi/releases/latest) indirebilirsin.
 
 | Yöntem | Açıklama |
 | --- | --- |
@@ -74,6 +80,7 @@ satırlar `Olay Kaydı` sekmesinde görünür.
 | `klavye-testi.ps1` | Asıl uygulama |
 | `klavye-testi.vbs` | Konsolsuz başlatıcı |
 | `klavye-testi.ico` | Uygulama simgesi |
+| `demo.gif` | Kısa kullanım demosu |
 | `klavye-testi-ayarlar.json` | Kaydedilen ayarlar (ilk kayıtta oluşur) |
 | `klavye-testi-sonucu.txt` | Son testin sonucu |
 | `CHANGELOG.md` | Sürüm geçmişi |
