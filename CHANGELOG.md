@@ -1,5 +1,28 @@
 # Değişiklik kaydı
 
+## v4.4 — Ortak bug avı (OpenCode + Copilot)
+
+Copilot yalnızca tuş motorunu, OpenCode yalnızca UI/ayar/sonuç katmanını
+inceledi; bulgular karşılıklı gönderilip çapraz doğrulandı. Tekrar eden kök
+neden bulunmadı.
+
+- **NumLock yarışı (Copilot):** `Wait-Key` artık ana tuş koduyla birlikte
+  numpad alternatif kodunu da izliyor. NumLock bekleme sırasında ON↔OFF
+  değişirse geçerli basış artık kaçmıyor (mock testi: eski `False`, yeni `True`).
+- **Ayarlar güvenliği (OpenCode):** test sürerken Ayarlar / Sıfırla / Temizle
+  kontrolleri kilitleniyor ve ikinci bir `Test-SettingsAllowed` koruması var.
+  Modal pencere artık `DoEvents` döngüsünü durdurup tuşları kaçıramıyor.
+- **Farklı kaydet (OpenCode):** geçersiz/kilitli yolda hata artık try/catch ile
+  gösteriliyor; WinForms olay handler'ında fırlayıp uygulamayı düşürmüyor.
+- **Sonuç yolu (OpenCode):** yeni `Resolve-ResultPath` hem boş yolu varsayılana
+  çeviriyor hem görece yolu uygulama klasörüne çözümlüyor. Aynı fonksiyon
+  `Load-Config` ve ayarlar penceresi tarafından kullanılıyor (tek çözüm).
+
+Doğrulama: 104/104 uçtan uca, 2/2 alt küme, iptal, abort (5 sn → 0 ms),
+düşük-bit yedek, toggle kurtarma, uyuşmazlık kaydı, bozuk ayar dosyası,
+UI geometrisi, gizli launcher, gerçek GUI (stderr/stdout boş). Gerçek sonuç
+dosyası korundu.
+
 ## v4.3 — İmza güncellemesi
 
 - Sağ alt köşedeki ikinci imza satırı artık **"With help of Opencode and

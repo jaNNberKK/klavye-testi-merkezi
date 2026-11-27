@@ -26,6 +26,15 @@ function Get-DefaultResultPath {
     Join-Path (Join-Path ([Environment]::GetFolderPath("Desktop")) "Klavye Testi") "klavye-testi-sonucu.txt"
 }
 
+# Boş yol varsayılan; görece yol uygulama klasörüne göre çözümlenir.
+# Aksi halde WriteAllText proses CWD'sine (kısayolda beklenmeyen yere) yazar.
+function Resolve-ResultPath($p) {
+    if (-not $p) { return Get-DefaultResultPath }
+    $s = [string]$p
+    if (-not [System.IO.Path]::IsPathRooted($s)) { return (Join-Path $appDir $s) }
+    $s
+}
+
 function Get-DefaultConfig {
     $defaultResult = Get-DefaultResultPath
     [ordered]@{
@@ -93,7 +102,7 @@ function Load-Config {
     foreach ($bn in @('HintTopMost','SoundOn','LogMismatch','DarkTheme','AutoSave','OpenResultAfter','AutoStart','AcceptNumNav')) {
         Clamp-Bool $cfg $bn
     }
-    if (-not $cfg.ResultPath) { $cfg.ResultPath = Get-DefaultResultPath }
+    $cfg.ResultPath = Resolve-ResultPath $cfg.ResultPath
     $cfg
 }
 
@@ -231,11 +240,18 @@ function New-Steps($cfg) {
 }
 
 # --- Tus algilama --------------------------------------------------------------
-function Wait-Key([int]$vk, [double]$seconds) {
+function Wait-Key([int]$vk, [double]$seconds, [int[]]$moreVks = @()) {
+    # NumLock bekleme sırasında ON<->OFF değişebilir; ana VK ve alternatif
+    # aday(lar) aynı anda izlenir, her birinin kendi yüksek-bit durumu tutulur.
+    $candidates = @([int[]]@($vk) + [int[]]$moreVks)
+    $candidates = @($candidates | Where-Object { $_ -ne 0 } | Select-Object -Unique)
     # Microsoft: dusuk bit guvenilmez (baska uygulama tuketebilir).
     # Asil tespit yuksek bitin 0->1 gecisidir; dusuk bit yalnizca yedek.
-    $first = [int][KBApp4]::GetAsyncKeyState($vk)
-    $prev = (($first -band 0x8000) -ne 0)
+    $prev = @{}
+    foreach ($k in $candidates) {
+        $first = [int][KBApp4]::GetAsyncKeyState($k)
+        $prev[$k] = (($first -band 0x8000) -ne 0)
+    }
     $script:specialPrev = @{}
     foreach ($k in $specialVks) {
         $sv = [int][KBApp4]::GetAsyncKeyState($k)
@@ -258,14 +274,16 @@ function Wait-Key([int]$vk, [double]$seconds) {
             return $false
         }
 
-        $s = [int][KBApp4]::GetAsyncKeyState($vk)
-        $down = (($s -band 0x8000) -ne 0)
-        if (($down -and -not $prev) -or (($s -band 1) -ne 0)) { return $true }
-        $prev = $down
+        foreach ($k in $candidates) {
+            $s = [int][KBApp4]::GetAsyncKeyState($k)
+            $down = (($s -band 0x8000) -ne 0)
+            if (($down -and -not $prev[$k]) -or (($s -band 1) -ne 0)) { return $true }
+            $prev[$k] = $down
+        }
 
         if ($script:cfg.LogMismatch -and $expectSpecial) {
             foreach ($k in $specialVks) {
-                if ($k -eq $vk) { continue }
+                if ($candidates -contains $k) { continue }
                 $sv = [int][KBApp4]::GetAsyncKeyState($k)
                 $sd = (($sv -band 0x8000) -ne 0)
                 if ($sd -and -not $script:specialPrev[$k]) {
@@ -486,6 +504,12 @@ function Start-Test {
     $lblStats.Text = "Toplam: 0   OK: 0   YOK: 0   Opsiyonel: 0"
     $btnStart.Enabled = $false
     $btnStop.Enabled = $true
+    # Modal ayarlar penceresi DoEvents döngüsünü bloke eder; test sırasında kapalı.
+    $btnSettings.Enabled = $false
+    $btnClear.Enabled = $false
+    $miSettingsOpen.Enabled = $false
+    $miReset.Enabled = $false
+    $miClear.Enabled = $false
     $tabMain.SelectedTab = $tabResults
 
     $hintForm.TopMost = [bool]$script:cfg.HintTopMost
@@ -536,12 +560,13 @@ function Start-Test {
         else {
             $before = ""
             if ($s.Vk -in @(0x14,0x90,0x91)) { $before = Get-Lock $s.Vk }
-            $targetVk = $s.Vk
-            if ($script:cfg.AcceptNumNav -and $s.AltVk -ne 0 -and (Get-Lock 0x90) -ne "ON") {
-                $targetVk = $s.AltVk
-                $detail = "NumLock kapalı → gezinme kodu"
+            $altVk = 0
+            if ($script:cfg.AcceptNumNav -and $s.AltVk -ne 0) {
+                $altVk = [int]$s.AltVk
+                if ((Get-Lock 0x90) -ne "ON") { $detail = "NumLock kapalı → gezinme kodu da kabul" }
             }
-            $ok = Wait-Key $targetVk $script:cfg.KeyTimeoutSec
+            # NumLock bekleme sırasında değişebilir: iki kodu birlikte bekle.
+            $ok = Wait-Key ([int]$s.Vk) $script:cfg.KeyTimeoutSec @($altVk)
 
             if ($s.Vk -in @(0x14,0x90,0x91)) {
                 [System.Windows.Forms.Application]::DoEvents()
@@ -628,6 +653,11 @@ function Start-Test {
     $lblStatus.Text = if ($aborted) { "İptal edildi." } else { ("Bitti: {0}/{1} algılandı." -f $passedCount, $total) }
     $btnStart.Enabled = $true
     $btnStop.Enabled = $false
+    $btnSettings.Enabled = $true
+    $btnClear.Enabled = $true
+    $miSettingsOpen.Enabled = $true
+    $miReset.Enabled = $true
+    $miClear.Enabled = $true
     $script:running = $false
     if ($script:cfg.OpenResultAfter -and (Test-Path -LiteralPath $script:cfg.ResultPath)) {
         try { Start-Process notepad.exe $script:cfg.ResultPath } catch { }
@@ -656,7 +686,16 @@ function Clear-Results {
 }
 
 # --- Ayarlar penceresi ----------------------------------------------------------
+function Test-SettingsAllowed {
+    if (-not $script:running) { return $true }
+    [System.Windows.Forms.MessageBox]::Show(
+        "Test sürerken ayarlar değiştirilemez. Önce Durdur'a basın.",
+        "Klavye Testi", "OK", "Information")
+    return $false
+}
+
 function Show-Settings {
+    if (-not (Test-SettingsAllowed)) { return }
     $f = New-Object System.Windows.Forms.Form
     $f.Text = "Ayarlar"
     # Icerik yaklasik 810 px: 620 yukseklikte Tamam/IPTAL tuslari form disinda kaliyordu.
@@ -776,7 +815,7 @@ function Show-Settings {
         $script:cfg.OpenResultAfter = $f.Controls["chkOpen"].Checked
         $script:cfg.AutoStart = $f.Controls["chkAutoStart"].Checked
         $script:cfg.AcceptNumNav = $f.Controls["chkNumNav"].Checked
-        $script:cfg.ResultPath = $f.Controls["txtPath"].Text
+        $script:cfg.ResultPath = Resolve-ResultPath $f.Controls["txtPath"].Text
         $checkedNames = @()
         for ($i = 0; $i -lt $clb.Items.Count; $i++) {
             if ($clb.GetItemChecked($i)) { $checkedNames += [string]$clb.Items[$i] }
@@ -818,6 +857,7 @@ $miClear.Add_Click({ Clear-Results })
 $btnSettings.Add_Click({ Show-Settings })
 $miSettingsOpen.Add_Click({ Show-Settings })
 $miReset.Add_Click({
+    if (-not (Test-SettingsAllowed)) { return }
     $script:cfg = Get-DefaultConfig
     Save-Config $script:cfg
     $script:steps = New-Steps $script:cfg
@@ -833,8 +873,13 @@ $miSaveAs.Add_Click({
     $sd = New-Object System.Windows.Forms.SaveFileDialog
     $sd.Filter = "Metin dosyası|*.txt"; $sd.FileName = $script:cfg.ResultPath
     if ($sd.ShowDialog($mainForm) -eq "OK") {
-        [System.IO.File]::WriteAllText($sd.FileName, ($script:lastResultText -join "`r`n"), (New-Object System.Text.UTF8Encoding($true)))
-        $lblStatus.Text = ("Sonuç kaydedildi: " + $sd.FileName)
+        # Write-ResultFile ile aynı koruma: kilitli/geçersiz yol olay handler'ında fırlamasın.
+        try {
+            [System.IO.File]::WriteAllText($sd.FileName, ($script:lastResultText -join "`r`n"), (New-Object System.Text.UTF8Encoding($true)))
+            $lblStatus.Text = ("Sonuç kaydedildi: " + $sd.FileName)
+        } catch {
+            [System.Windows.Forms.MessageBox]::Show("Sonuç kaydedilemedi:`n" + $_.Exception.Message, "Klavye Testi", "OK", "Warning")
+        }
     }
 })
 $miExit.Add_Click({ $mainForm.Close() })
