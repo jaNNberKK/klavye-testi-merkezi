@@ -6,7 +6,6 @@ Türkçe **Q** klavyesindeki (KBDTUQ) tuşların tamamını tek tek sınayan, Wi
 üzerinde çalışan küçük bir masaüstü uygulaması. Tuşlar klavyedeki **fiziksel
 sırayla** sorulur; alfabetik sıra kullanılmaz.
 
-![Ana ekran](ekran-goruntusu.png)
 
 ### Kısa demo
 
