@@ -1,5 +1,16 @@
 # Değişiklik kaydı
 
+## v5.3 — Ekran görüntüleri düzeltildi
+
+- `ekran-goruntusu.png` ve `klavye-haritasi.png` yanlışlıkla uygulama yerine
+  masaüstünü gösteriyordu: eski üretim scripti `CopyFromScreen` kullanıyor ve
+  form öne geçmeden kare alıyordu.
+- Görüntüler yeniden üretildi: form öne alınıyor, `PrintWindow` ile pencere
+  içeriği doğrudan okunuyor ve koyu piksel oranıyla doğrulanıyor.
+- Doğrulama: her iki görselde uygulamanın tam turkuaz `(0,166,166)`, koyu zemin
+  `(32,32,32)` ve klavye tuşu `(45,45,45)` renkleri mevcut. `demo.gif` kontrol
+  edildi; masaüstü değil uygulama karelerini içeriyor, değiştirilmedi.
+
 ## v5.2 — GitHub Releases ve demo GIF
 
 - `demo.gif` eklendi: boş durum, sonuç tablosu, renkli klavye haritası ve
