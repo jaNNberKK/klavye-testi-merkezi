@@ -38,9 +38,9 @@ sırayla** sorulur; alfabetik sıra kullanılmaz.
 | **`klavye-testi.vbs`** | Klasör içinden çift tıkla; yine konsolsuz açılır. |
 | **`klavye-testi.ps1`** | Kaynak çalıştırma: `powershell -ExecutionPolicy Bypass -File klavye-testi.ps1`. |
 
-İlk yöntemler dışında PowerShell 5.1 veya üzeri gerekir; ek paket kurulumu
-yoktur. EXE, aynı klasördeki `.ps1` dosyasını kullanmaz; betiğin kendi kopyasını
-içerir.
+EXE, içine gömülü betik sayesinde tek başına çalışır; `.ps1` dosyasına ihtiyaç
+duymaz. Diğer yöntemlerde Windows'un yerleşik PowerShell 5.1 veya üzeri gerekir;
+ek paket kurulumu yoktur.
 
 ## Kullanım
 
