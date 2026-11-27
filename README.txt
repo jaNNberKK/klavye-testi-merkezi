@@ -35,7 +35,7 @@ sesi duyulmaz. İstersen Ayarlar > "Sesli geri bildirim" kutusunu işaretle.
 
 İmza
 ----
-Uygulamanın sağ alt köşesinde: "Made by jaNNberk" / "With help of Opencode".
+Uygulamanın sağ alt köşesinde: "Made by jaNNberk" / "With help of Opencode and Copilot ;)".
 
 Notlar
 ------

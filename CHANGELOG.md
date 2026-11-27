@@ -1,5 +1,13 @@
 # Değişiklik kaydı
 
+## v4.3 — İmza güncellemesi
+
+- Sağ alt köşedeki ikinci imza satırı artık **"With help of Opencode and
+  Copilot ;)"**; birinci satır **"Made by jaNNberk"** aynen kaldı.
+- Hakkında penceresi ve `README.txt` aynı metinle güncellendi.
+- Doğrulama: 7 pt font, panel genişliği 210 px, metin ölçümü 161.9 px (taşma
+  yok), syntax/BOM, abort ve 104/104 simülasyon geçti.
+
 ## v4.2 — Copilot bağımsız denetimi ve durdurma gecikmesi düzeltmesi
 
 - GitHub Copilot CLI (ücretsiz GitHub hesabıyla) bağımsız kod denetimcisi olarak

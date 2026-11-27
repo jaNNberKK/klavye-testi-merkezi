@@ -423,7 +423,7 @@ $creditPanel.Width = 210
 $lblCredit2 = New-Object System.Windows.Forms.Label
 $lblCredit2.Dock = "Fill"
 $lblCredit2.TextAlign = [System.Drawing.ContentAlignment]::TopRight
-$lblCredit2.Text = "With help of Opencode"
+$lblCredit2.Text = "With help of Opencode and Copilot ;)"
 $lblCredit2.Font = New-Object System.Drawing.Font("Segoe UI", 7)
 $creditPanel.Controls.Add($lblCredit2)
 $lblCredit1 = New-Object System.Windows.Forms.Label
@@ -845,7 +845,7 @@ $miUsage.Add_Click({
 })
 $miAbout.Add_Click({
     [System.Windows.Forms.MessageBox]::Show(
-        "Klavye Testi Merkezi v4`n`nMade by jaNNberk`nWith help of Opencode`n`nTürkçe Q (KBDTUQ) VK eşlemesi.`nGetAsyncKeyState: yüksek bit kenar algılama + düşük bit yedek.`nAyar dosyası: $configPath",
+        "Klavye Testi Merkezi v4`n`nMade by jaNNberk`nWith help of Opencode and Copilot ;)`n`nTürkçe Q (KBDTUQ) VK eşlemesi.`nGetAsyncKeyState: yüksek bit kenar algılama + düşük bit yedek.`nAyar dosyası: $configPath",
         "Hakkında", "OK", "Information")
 })
 
