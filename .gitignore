@@ -1,0 +1,9 @@
+# Test her calistirildiginda degisen dosyalar
+klavye-testi-sonucu.txt
+klavye-testi-ayarlar.json
+
+# Windows / editor artiklari
+Thumbs.db
+desktop.ini
+*.tmp
+*.log

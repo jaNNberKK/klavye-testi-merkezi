@@ -1,0 +1,6 @@
+# Windows satir sonlari korunacak (PowerShell/VBS icin onemli)
+*.ps1 text eol=crlf
+*.vbs text eol=crlf
+*.txt text eol=crlf
+*.md  text eol=crlf
+*.json text eol=crlf
