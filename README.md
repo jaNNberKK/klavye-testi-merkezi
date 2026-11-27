@@ -35,7 +35,7 @@ sırayla** sorulur; alfabetik sıra kullanılmaz.
 
 ## Başlatma
 
-`Klavye Testi.exe` dosyasını [son sürümden](https://github.com/jaNNberKK/klavye-testi-merkezi/releases/latest) indirebilirsin.
+Sürüm varlığındaki `Klavye.Testi.exe` dosyasını [son sürümden](https://github.com/jaNNberKK/klavye-testi-merkezi/releases/latest) indirebilirsin (GitHub boşlukları noktaya çevirir).
 
 | Yöntem | Açıklama |
 | --- | --- |
