@@ -1,5 +1,17 @@
 # Değişiklik kaydı
 
+## v4.2 — Copilot bağımsız denetimi ve durdurma gecikmesi düzeltmesi
+
+- GitHub Copilot CLI (ücretsiz GitHub hesabıyla) bağımsız kod denetimcisi olarak
+  bağlandı; Claude Handoff dosyası kaldırıldı.
+- **Düzeltilen gerçek bug:** `Wait-Key`-polling döngüsü `$script:abort` bayrağını
+  kontrol etmiyordu. Test sırasında **Durdur**'a basmak veya pencereyi kapatmak,
+  o tuşun 60 saniyeye varan timeout'u bitene kadar etkisiz kalıyordu. Artık döngü
+  her adımda abort'u kontrol ediyor ve anında çıkıyor (ölçüm: 5 sn → 0 ms).
+- Doğrulama: abort senaryosu, syntax/BOM, 104/104 uçtan uca simülasyon, alt
+  küme/iptal senaryoları, bozuk ayar dosyası, UI geometrisi ve gizli launcher —
+  hepsi geçti.
+
 ## v4.1 — Ayar dosyası sağlamlaştırma ve derin bug testi
 
 - Bozuk / elle düzenlenmiş `klavye-testi-ayarlar.json` dosyasındaki sayısal

@@ -245,6 +245,10 @@ function Wait-Key([int]$vk, [double]$seconds) {
     $end = [DateTime]::UtcNow.AddSeconds($seconds)
 
     while ([DateTime]::UtcNow -lt $end) {
+        # Durdur dugmesi veya FormClosing bir önceki adımda abort'u set ettiyse
+        # bu tuşun timeout'unu beklemeden hemen çık; aksi halde kapanma 60 sn gecikir.
+        if ($script:abort) { return $false }
+
         # Iptal kisayolu: Ctrl + Shift + Q
         $ctrl = [int][KBApp4]::GetAsyncKeyState(0x11)
         $shift = [int][KBApp4]::GetAsyncKeyState(0x10)
