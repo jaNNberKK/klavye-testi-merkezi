@@ -22,8 +22,12 @@ $appDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $configPath = Join-Path $appDir "klavye-testi-ayarlar.json"
 
 # --- Varsayilan ayarlar --------------------------------------------------------
+function Get-DefaultResultPath {
+    Join-Path (Join-Path ([Environment]::GetFolderPath("Desktop")) "Klavye Testi") "klavye-testi-sonucu.txt"
+}
+
 function Get-DefaultConfig {
-    $defaultResult = Join-Path (Join-Path ([Environment]::GetFolderPath("Desktop")) "Klavye Testi") "klavye-testi-sonucu.txt"
+    $defaultResult = Get-DefaultResultPath
     [ordered]@{
         KeyTimeoutSec   = 10
         LockConfirmMs   = 900
@@ -45,6 +49,29 @@ function Get-DefaultConfig {
     }
 }
 
+function Clamp-Number($cfg, [string]$name, [double]$min, [double]$max, $fallback) {
+    $v = $null
+    try {
+        $v = [double]::Parse([string]$cfg[$name], [Globalization.CultureInfo]::InvariantCulture)
+    } catch { $v = $null }
+    if ($null -eq $v -or [double]::IsNaN($v) -or [double]::IsInfinity($v)) {
+        $v = $null
+        try { $v = [double]::Parse([string]$fallback, [Globalization.CultureInfo]::InvariantCulture) } catch { }
+        if ($null -eq $v -or [double]::IsNaN($v) -or [double]::IsInfinity($v)) { $v = $min }
+    }
+    if ($v -lt $min) { $v = $min }
+    if ($v -gt $max) { $v = $max }
+    $cfg[$name] = [int]$v
+}
+
+function Clamp-Bool($cfg, [string]$name) {
+    $v = $cfg[$name]
+    if ($v -is [bool]) { return }
+    if ($null -eq $v) { $cfg[$name] = $false; return }
+    $s = ([string]$v).Trim().ToLowerInvariant()
+    $cfg[$name] = (@('1','true','yes','on') -contains $s)
+}
+
 function Load-Config {
     $cfg = Get-DefaultConfig
     if (Test-Path -LiteralPath $configPath) {
@@ -55,7 +82,18 @@ function Load-Config {
             }
         } catch { }
     }
-    if (-not $cfg.ResultPath) { $cfg.ResultPath = $defaultResult }
+    # Bozuk/elle degistirilmis JSON; sinir disi deger Start-Sleep'i patlatabilir.
+    Clamp-Number $cfg 'KeyTimeoutSec'   1    60   ($cfg['KeyTimeoutSec'])
+    Clamp-Number $cfg 'LockConfirmMs'   0  5000   ($cfg['LockConfirmMs'])
+    Clamp-Number $cfg 'PollMs'          1    20   ($cfg['PollMs'])
+    Clamp-Number $cfg 'HintX'           0  3000   ($cfg['HintX'])
+    Clamp-Number $cfg 'HintY'           0  3000   ($cfg['HintY'])
+    Clamp-Number $cfg 'HintWidth'     300  1600   ($cfg['HintWidth'])
+    Clamp-Number $cfg 'HintHeight'    100   800   ($cfg['HintHeight'])
+    foreach ($bn in @('HintTopMost','SoundOn','LogMismatch','DarkTheme','AutoSave','OpenResultAfter','AutoStart','AcceptNumNav')) {
+        Clamp-Bool $cfg $bn
+    }
+    if (-not $cfg.ResultPath) { $cfg.ResultPath = Get-DefaultResultPath }
     $cfg
 }
 

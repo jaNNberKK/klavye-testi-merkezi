@@ -1,5 +1,26 @@
 # Değişiklik kaydı
 
+## v4.1 — Ayar dosyası sağlamlaştırma ve derin bug testi
+
+- Bozuk / elle düzenlenmiş `klavye-testi-ayarlar.json` dosyasındaki sayısal
+  değerler artık geçerli aralığa sıkıştırılıyor (ör. `PollMs = -1` artık
+  `Start-Sleep` hatasına yol açmıyor).
+- `"false"` / `"0"` gibi metin boolean'lar doğru şekilde `false` yorumlanıyor;
+  PowerShell'de boş olmayan her string `true` sayıldığı için ses istenmeden
+  açılabiliyordu.
+- `ResultPath` boşsa varsayılan yol artık ortak `Get-DefaultResultPath`
+  fonksiyonundan alınıyor. Önceden `Load-Config`, başka fonksiyonun yerel
+  değişkenine erişmeye çalışıyor ve yolu boş bırakıyordu.
+
+### Ek doğrulama senaryoları
+
+- Düşük bit yedek algılama (yüksek bit hiç set edilmezse): geçti.
+- Toggle kurtarma (tuş algılanmasa da kilit durumu değiştiyse OK): geçti.
+- Yanlış özel tuş uyuşmazlık kaydı: geçti.
+- Bozuk ayar dosyası (negatif/değer dışı/string boolean/boş yol): geçti.
+- Statik bütünlük: 104 adım, yinelenen ad veya VK yok, 12/12 özel tuş kapsanıyor.
+- Gerçek GUI açılışı: stderr/stdout boş.
+
 ## v4 — Klavye Testi Merkezi (ilk yayın)
 
 - Tam WinForms arayüz: menü çubuğu (Dosya / Test / Ayarlar / Yardım), araç çubuğu,
