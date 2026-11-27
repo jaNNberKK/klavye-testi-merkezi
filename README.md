@@ -30,7 +30,6 @@ sırayla** sorulur; alfabetik sıra kullanılmaz.
 - **Güvenli davranış:** Test sürerken ayarlar kilitlenir; iptal (`Ctrl + Shift +
   Q`) ve durdurma anında etkili olur.
 
-![Klavye haritası](klavye-haritasi.png)
 
 ## Başlatma
 
