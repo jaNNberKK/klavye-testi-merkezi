@@ -1,4 +1,4 @@
-﻿# Klavye Testi Merkezi v4 - tam WinForms uygulamasi
+﻿# Klavye Testi Merkezi v5 - tam WinForms uygulamasi
 # onceki surum: rehberli-tus-testi-v3.ps1 (artik gerekli degil, klasore tasinmadi).
 # Kaynak: kbdlayout.info/KBDTUQ + Microsoft GetAsyncKeyState/GetKeyState dokumanlari.
 # Cift tiklama icin: klavye-testi.vbs (ayni klasorde)
@@ -18,7 +18,13 @@ public static class KBApp4 {
 }
 "@
 
-$appDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+# PS1, VBS veya derlenmis EXE fark etmeksizin uygulama klasorunu bul.
+$scriptPath = $MyInvocation.MyCommand.Path
+if (-not $scriptPath) { $scriptPath = [Environment]::GetCommandLineArgs()[0] }
+$appDir = Split-Path -Parent $scriptPath
+if (-not $appDir -or -not (Test-Path -LiteralPath $appDir)) {
+    $appDir = Join-Path ([Environment]::GetFolderPath("Desktop")) "Klavye Testi"
+}
 $configPath = Join-Path $appDir "klavye-testi-ayarlar.json"
 
 # --- Varsayilan ayarlar --------------------------------------------------------
@@ -358,14 +364,65 @@ function Apply-Theme {
     $txtLog.BackColor = $c[0]
     $txtLog.ForeColor = $c[1]
     try { $mainMenu.BackColor = $c[0]; $mainMenu.ForeColor = $c[1] } catch { }
+    if ($script:keyButtons) { Reset-KeyMap }
+}
+
+# --- Görsel rötuş ---------------------------------------------------------------
+$accent = [System.Drawing.Color]::FromArgb(0, 166, 166)
+$accentText = [System.Drawing.Color]::FromArgb(230, 255, 255)
+$keyOk = [System.Drawing.Color]::FromArgb(40, 150, 90)
+$keyFail = [System.Drawing.Color]::FromArgb(190, 60, 60)
+
+function Get-KeyCaption([string]$name) {
+    switch ($name) {
+        "Esc"          { return "ESC" }
+        "PrintScreen"  { return "PrtSc" }
+        "NumLock"      { return "NumLk" }
+        "ScrollLock"   { return "ScrLk" }
+        "Pause / Break" { return "Pause" }
+        "Backspace"    { return "Back" }
+        "Insert"       { return "Ins" }
+        "PageUp"       { return "PgUp" }
+        "PageDown"     { return "PgDn" }
+        "Delete"       { return "Del" }
+        "CapsLock"     { return "Caps" }
+        "Sol Shift"    { return "Shift" }
+        "Sağ Shift"    { return "Shift" }
+        "Sol Ctrl"     { return "Ctrl" }
+        "Sağ Ctrl"     { return "Ctrl" }
+        "Sol Win"      { return "Win" }
+        "Sağ Win (varsa; Fn değil)" { return "Win" }
+        "Sol Alt"      { return "Alt" }
+        "AltGr (Sağ Alt)" { return "AltGr" }
+        "Menü tuşu"    { return "Menü" }
+        "Yukarı ok"    { return "↑" }
+        "Aşağı ok"     { return "↓" }
+        "Sola ok"      { return "←" }
+        "Sağa ok"      { return "→" }
+        "NumDecimal (.)" { return "." }
+        "NumAdd (+)"   { return "+" }
+        "NumSubtract (-)" { return "-" }
+        "NumMultiply (*)" { return "*" }
+        "NumDivide (/)" { return "/" }
+        default {
+            if ($name -match '^Num(\d)$') { return $Matches[1] }
+            if ($name -match '^(.) / ') { return $Matches[1] }
+            return $name
+        }
+    }
 }
 
 # --- Ana pencere ----------------------------------------------------------------
 $mainForm = New-Object System.Windows.Forms.Form
-$mainForm.Text = "Klavye Testi Merkezi v4"
+$mainForm.Text = "Klavye Testi Merkezi v5"
 $mainForm.ClientSize = New-Object System.Drawing.Size(980, 640)
 $mainForm.StartPosition = "CenterScreen"
 $mainForm.MinimumSize = New-Object System.Drawing.Size(760, 480)
+$mainForm.Font = New-Object System.Drawing.Font("Segoe UI", 9)
+$iconPath = Join-Path $appDir "klavye-testi.ico"
+if (Test-Path -LiteralPath $iconPath) {
+    try { $mainForm.Icon = New-Object System.Drawing.Icon($iconPath) } catch { }
+}
 
 $mainMenu = New-Object System.Windows.Forms.MenuStrip
 $miFile = New-Object System.Windows.Forms.ToolStripMenuItem("Dosya")
@@ -379,6 +436,8 @@ $mainForm.Controls.Add($mainMenu)
 $tool = New-Object System.Windows.Forms.ToolStrip
 $tool.Dock = "Top"
 $btnStart = New-Object System.Windows.Forms.ToolStripButton("▶ Başlat")
+$btnStart.Font = New-Object System.Drawing.Font("Segoe UI", 9, [System.Drawing.FontStyle]::Bold)
+$btnStart.ForeColor = $accent
 $btnStop = New-Object System.Windows.Forms.ToolStripButton("■ Durdur")
 $btnSettings = New-Object System.Windows.Forms.ToolStripButton("⚙ Ayarlar")
 $btnClear = New-Object System.Windows.Forms.ToolStripButton("Temizle")
@@ -386,18 +445,62 @@ $btnStop.Enabled = $false
 $tool.Items.AddRange(@($btnStart, $btnStop, $btnSettings, $btnClear))
 $mainForm.Controls.Add($tool)
 
+$barPanel = New-Object System.Windows.Forms.Panel
+$barPanel.Dock = "Top"
+$barPanel.Height = 20
 $bar = New-Object System.Windows.Forms.ProgressBar
-$bar.Dock = "Top"
-$bar.Height = 20
+$bar.Dock = "Fill"
 $bar.Minimum = 0
 $bar.Maximum = 100
-$mainForm.Controls.Add($bar)
+$lblPercent = New-Object System.Windows.Forms.Label
+$lblPercent.Dock = "Fill"
+$lblPercent.TextAlign = [System.Drawing.ContentAlignment]::MiddleCenter
+$lblPercent.Text = "0%"
+$lblPercent.BackColor = [System.Drawing.Color]::Transparent
+$lblPercent.ForeColor = $accentText
+$lblPercent.Font = New-Object System.Drawing.Font("Segoe UI", 8, [System.Drawing.FontStyle]::Bold)
+$barPanel.Controls.Add($bar)
+$barPanel.Controls.Add($lblPercent)
+$mainForm.Controls.Add($barPanel)
 
 $tabMain = New-Object System.Windows.Forms.TabControl
 $tabMain.Dock = "Fill"
 $tabResults = New-Object System.Windows.Forms.TabPage("Sonuçlar")
+$tabKeys = New-Object System.Windows.Forms.TabPage("Klavye")
 $tabLog = New-Object System.Windows.Forms.TabPage("Olay Kaydı")
-$tabMain.TabPages.AddRange(@($tabResults, $tabLog))
+
+# Klavye haritasi: fiziksel satirlara gore 7 x 17 izgara.
+$script:keyButtons = @{}
+$keyMap = New-Object System.Windows.Forms.TableLayoutPanel
+$keyMap.Dock = "Fill"
+$keyMap.RowCount = 7
+$keyMap.ColumnCount = 17
+$keyMap.AutoScroll = $true
+$keyMap.Padding = New-Object System.Windows.Forms.Padding(6)
+for ($c = 0; $c -lt 17; $c++) {
+    [void]$keyMap.ColumnStyles.Add((New-Object System.Windows.Forms.ColumnStyle([System.Windows.Forms.SizeType]::Percent, [single](100 / 17))))
+}
+for ($r = 0; $r -lt 7; $r++) {
+    [void]$keyMap.RowStyles.Add((New-Object System.Windows.Forms.RowStyle([System.Windows.Forms.SizeType]::Percent, [single](100 / 7))))
+}
+$keyGroups = @("Fonksiyon","Rakam satiri","Q satiri","A satiri","Z satiri","Alt satir","Sayisal takim")
+for ($r = 0; $r -lt $keyGroups.Count; $r++) {
+    $rowSteps = @($script:steps | Where-Object { $_.Group -eq $keyGroups[$r] })
+    for ($c = 0; $c -lt $rowSteps.Count; $c++) {
+        $s = $rowSteps[$c]
+        $k = New-Object System.Windows.Forms.Label
+        $k.Text = Get-KeyCaption $s.Name
+        $k.TextAlign = [System.Drawing.ContentAlignment]::MiddleCenter
+        $k.Dock = "Fill"
+        $k.Margin = New-Object System.Windows.Forms.Padding(2)
+        $k.BorderStyle = "FixedSingle"
+        $k.Font = New-Object System.Drawing.Font("Segoe UI", 8)
+        $keyMap.Controls.Add($k, $c, $r)
+        $script:keyButtons[$s.Name] = $k
+    }
+}
+$tabKeys.Controls.Add($keyMap)
+$tabMain.TabPages.AddRange(@($tabResults, $tabKeys, $tabLog))
 $mainForm.Controls.Add($tabMain)
 
 $dgv = New-Object System.Windows.Forms.DataGridView
@@ -416,6 +519,13 @@ $dgv.Columns[1].Width = 260
 $dgv.Columns[2].Width = 90
 $dgv.Columns[3].Width = 520
 $tabResults.Controls.Add($dgv)
+$lblEmpty = New-Object System.Windows.Forms.Label
+$lblEmpty.Dock = "Fill"
+$lblEmpty.TextAlign = [System.Drawing.ContentAlignment]::MiddleCenter
+$lblEmpty.Text = "Henüz test yapılmadı.`r`n`r`nBaşlat'a basın; sonra ekranda görünen tuşa basmanız yeterli."
+$lblEmpty.Font = New-Object System.Drawing.Font("Segoe UI", 12)
+$lblEmpty.ForeColor = [System.Drawing.Color]::FromArgb(140, 140, 140)
+$tabResults.Controls.Add($lblEmpty)
 
 $txtLog = New-Object System.Windows.Forms.TextBox
 $txtLog.Multiline = $true
@@ -479,6 +589,33 @@ $hintLabel.Font = New-Object System.Drawing.Font("Segoe UI", 15, [System.Drawing
 $hintLabel.Text = "Hazır"
 $hintForm.Controls.Add($hintLabel)
 
+function Set-KeyState([string]$name, [string]$state) {
+    $k = $script:keyButtons[$name]
+    if (-not $k) { return }
+    $baseBg = if ($script:cfg.DarkTheme) { [System.Drawing.Color]::FromArgb(45,45,45) } else { [System.Drawing.Color]::FromArgb(225,225,225) }
+    $baseFg = if ($script:cfg.DarkTheme) { [System.Drawing.Color]::White } else { [System.Drawing.Color]::FromArgb(20,20,20) }
+    $st = $script:steps | Where-Object { $_.Name -eq $name } | Select-Object -First 1
+    switch ($state) {
+        "current" { $k.BackColor = $accent;  $k.ForeColor = [System.Drawing.Color]::White }
+        "ok"      { $k.BackColor = $keyOk;    $k.ForeColor = [System.Drawing.Color]::White }
+        "fail"    { $k.BackColor = $keyFail;  $k.ForeColor = [System.Drawing.Color]::White }
+        default {
+            if ($st -and -not $st.Enabled) {
+                $k.BackColor = [System.Drawing.Color]::FromArgb(70,70,70)
+                $k.ForeColor = [System.Drawing.Color]::FromArgb(130,130,130)
+            } else {
+                $k.BackColor = $baseBg
+                $k.ForeColor = $baseFg
+            }
+        }
+    }
+    $k.Refresh()
+}
+
+function Reset-KeyMap {
+    foreach ($n in @($script:keyButtons.Keys)) { Set-KeyState $n "default" }
+}
+
 function Add-Log([string]$line) {
     $txtLog.AppendText($line + "`r`n")
 }
@@ -501,6 +638,9 @@ function Start-Test {
     $script:toggleNotes.Clear()
     $dgv.Rows.Clear()
     $txtLog.Clear()
+    $lblEmpty.Hide()
+    $lblPercent.Text = "0%"
+    Reset-KeyMap
     $lblStats.Text = "Toplam: 0   OK: 0   YOK: 0   Opsiyonel: 0"
     $btnStart.Enabled = $false
     $btnStop.Enabled = $true
@@ -543,6 +683,8 @@ function Start-Test {
         $hintLabel.Refresh()
         $lblStatus.Text = ("[{0}/{1}]  {2}" -f $done, $total, $s.Name)
         $bar.Value = $done
+        $lblPercent.Text = ("{0}%" -f [int](100 * $done / [Math]::Max(1, $total)))
+        Set-KeyState $s.Name "current"
         [System.Windows.Forms.Application]::DoEvents()
 
         $ok = $false
@@ -586,6 +728,7 @@ function Start-Test {
         }
 
         if ($script:abort) { $aborted = $true; break }
+        Set-KeyState $s.Name $(if ($ok) { "ok" } else { "fail" })
         $tested.Add($s.Name)
 
         if ($ok) {
@@ -605,7 +748,7 @@ function Start-Test {
     $hintForm.Hide()
     $passedCount = $passed
     $lines = @()
-    $lines += "==== KLAVYE TESTİ v4 — SONUÇ ===="
+    $lines += "==== KLAVYE TESTİ v5 — SONUÇ ===="
     $lines += ("Tarih: " + (Get-Date -Format "yyyy-MM-dd HH:mm:ss"))
     $lines += ("Algılanan: {0} / {1}" -f $passedCount, $total)
     if ($total -eq 0) { $lines += "UYARI: Test edilecek tuş seçilmedi (Ayarlar > tuş listesini kontrol et)." }
@@ -679,6 +822,9 @@ function Stop-Test {
 function Clear-Results {
     $dgv.Rows.Clear()
     $txtLog.Clear()
+    $lblEmpty.Show()
+    $lblPercent.Text = "0%"
+    Reset-KeyMap
     $script:lastResultText = ""
     $bar.Value = 0
     $lblStats.Text = "Toplam: 0   OK: 0   YOK: 0   Opsiyonel: 0"
@@ -890,7 +1036,7 @@ $miUsage.Add_Click({
 })
 $miAbout.Add_Click({
     [System.Windows.Forms.MessageBox]::Show(
-        "Klavye Testi Merkezi v4`n`nMade by jaNNberk`nWith help of Opencode and Copilot ;)`n`nTürkçe Q (KBDTUQ) VK eşlemesi.`nGetAsyncKeyState: yüksek bit kenar algılama + düşük bit yedek.`nAyar dosyası: $configPath",
+        "Klavye Testi Merkezi v5`n`nMade by jaNNberk`nWith help of Opencode and Copilot ;)`n`nTürkçe Q (KBDTUQ) VK eşlemesi.`nGetAsyncKeyState: yüksek bit kenar algılama + düşük bit yedek.`nAyar dosyası: $configPath",
         "Hakkında", "OK", "Information")
 })
 

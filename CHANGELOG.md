@@ -1,5 +1,26 @@
 # Değişiklik kaydı
 
+## v5 — Görsel klavye haritası, EXE ve GitHub sunumu
+
+- **Klavye sekmesi:** 104 tuşun tamamı fiziksel satırlara göre 7 × 17 ızgarada
+  gösteriliyor. Beklenen tuş turkuaz, geçen tuş yeşil, kaçırılan tuş kırmızı,
+  devre dışı tuş gri; `Reset-KeyMap` tema değişiminde ve temizlemede çalışıyor.
+- **Hızlı rötuş:** `Segoe UI` yazı tipi, turkuaz vurgu rengi, kalın **Başlat**
+  düğmesi, yüzdeli ilerleme çubuğu ve test öncesi boş durum mesajı eklendi.
+- **Simge:** 32 × 32 `klavye-testi.ico` üretildi; forma ve masaüstü kısayoluna
+  bağlandı.
+- **EXE:** `ps2exe` ile `Klavye Testi.exe` derlendi. Konsol açmıyor, gizli
+  başlatıcıya gerek duymuyor. Uygulama klasörü artık EXE içinde de doğru
+  çözülüyor (`GetCommandLineArgs()[0]` yedeği).
+- **GitHub:** `README.md` görsellerle yeniden yazıldı; `ekran-goruntusu.png` ve
+  `klavye-haritasi.png` eklendi. Türkçe büyük/küçük harf ve Fn/Sağ Win notu
+  düzeltildi; repo herkese açık hale getirildi.
+- Kaynak dosya hâlâ **doğruluk kaynağıdır**; EXE onun derlenmiş kopyasıdır.
+
+Doğrulama: 104 tuşluk harita ve renk durumları harness ile, EXE açılışı
+(konsol yok, stderr/stdout boş) gerçek çalıştırma ile, görseller 980 × 640
+olarak kaydedildi. v4.4 testleri tekrar geçti.
+
 ## v4.4 — Ortak bug avı (OpenCode + Copilot)
 
 Copilot yalnızca tuş motorunu, OpenCode yalnızca UI/ayar/sonuç katmanını
