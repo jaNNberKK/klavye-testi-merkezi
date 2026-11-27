@@ -34,13 +34,13 @@ sırayla** sorulur; alfabetik sıra kullanılmaz.
 | Yöntem | Açıklama |
 | --- | --- |
 | **`Klavye Testi.exe`** | Önerilen. Çift tıkla; konsol penceresi görünmez. İmzasız olduğu için Windows ilk açılışta "*Daha fazla bilgi → Yine de çalıştır*" diyebilir. |
-| **Masaüstü kısayolu** | `Klavye Testi.lnk`, uygulamayı gizli VBS başlatıcısıyla açar. |
+| **Masaüstü kısayolu** | `Klavye Testi.lnk`, `Klavye Testi.exe` dosyasını doğrudan açar; arada VBS veya PowerShell zinciri yoktur. |
 | **`klavye-testi.vbs`** | Klasör içinden çift tıkla; yine konsolsuz açılır. |
 | **`klavye-testi.ps1`** | Kaynak çalıştırma: `powershell -ExecutionPolicy Bypass -File klavye-testi.ps1`. |
 
-EXE, içine gömülü betik sayesinde tek başına çalışır; `.ps1` dosyasına ihtiyaç
-duymaz. Diğer yöntemlerde Windows'un yerleşik PowerShell 5.1 veya üzeri gerekir;
-ek paket kurulumu yoktur.
+EXE ve masaüstü kısayolu, içine gömülü betik sayesinde tek başına çalışır;
+`.ps1` dosyasına ihtiyaç duymaz. VBS ve kaynak betik yöntemlerinde Windows'un
+yerleşik PowerShell 5.1 veya üzeri gerekir; ek paket kurulumu yoktur.
 
 ## Kullanım
 

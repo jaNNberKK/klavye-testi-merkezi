@@ -11,7 +11,8 @@
   bağlandı.
 - **EXE:** `ps2exe` ile `Klavye Testi.exe` derlendi. Konsol açmıyor, gizli
   başlatıcıya gerek duymuyor. Uygulama klasörü artık EXE içinde de doğru
-  çözülüyor (`GetCommandLineArgs()[0]` yedeği).
+  çözülüyor (`GetCommandLineArgs()[0]` yedeği). Masaüstü kısayolu artık EXE'yi
+  doğrudan açıyor; aradaki VBS/PowerShell zinciri kaldırıldı.
 - **GitHub:** `README.md` görsellerle yeniden yazıldı; `ekran-goruntusu.png` ve
   `klavye-haritasi.png` eklendi. Türkçe büyük/küçük harf ve Fn/Sağ Win notu
   düzeltildi; repo herkese açık hale getirildi.
