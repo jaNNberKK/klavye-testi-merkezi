@@ -1,5 +1,31 @@
 # Değişiklik kaydı
 
+## v5.1 — Yeni UI için ortak bug turu (OpenCode + Copilot)
+
+v5'te eklenen görsel öğeler hedef alındı. Copilot statik/UI, OpenCode dinamik
+harness ve piksel testi yürüttü; bulgular karşılıklı doğrulandı.
+
+- **z-order hatası (OpenCode):** WinForms'ta `Controls[0]` üstte olduğu için
+  eklenen yüzde etiketi ProgressBar'ın, boş durum etiketi de sonuç tablosunun
+  **arkasında** kalıyordu; yani hiç görünmüyorlardı. İkisine de
+  `BringToFront()` eklendi. Kanıt: görünürlük açılıp kapatıldığında piksel farkı
+  **0 → 228** ve **0 → 5359**. Copilot bulguyu bağımsız olarak **REAL** onayladı.
+- **Yüzde/bar çakışması (OpenCode, önceki maddenin yan etkisi):** Şeffaf Label,
+  barın dolgusunu kendi arka planıyla kapatıyordu. Yüzde ve ProgressBar iki ayrı
+  sütuna alındı; satır yüksekliği 20 px'e sabitlendi, kenar boşlukları sıfırlandı
+  (ölçüm: panel 980×20, yüzde 46×20, bar 934×20).
+- **Türkçe yazım (Copilot):** İpucu metinlerindeki `Sol ust`, `saginda`,
+  `gorunmez`, `sagi`, `alti`, `kaydina`, `0'in` gibi ASCII transliterasyonları
+  düzeltildi (`Sol üst`, `sağında`, `görünmez`, `sağı`, `altı`, `kaydına`,
+  `0'ın`). Ayarlar etiketindeki `varsayilan kapali` → `varsayılan kapalı`.
+- **Doküman (OpenCode):** README'de tekrar eden "Sonuçlar Sonuçlar" ifadesi
+  düzeltildi. EXE ve ekran görüntüleri güncel kaynaktan yeniden üretildi.
+
+Doğrulama: 104 tuş / 104 harita, yinelenen ad 0, boş yazı 0, hücre taşması 0
+(57 px hücre), durum geçişleri, devre dışı tuş renkleri, kısayoldan açılış
+(1 EXE / 0 conhost), README görselleri ve tüm eski harness'lar `exit=0`.
+Gerçek sonuç dosyası korundu.
+
 ## v5 — Görsel klavye haritası, EXE ve GitHub sunumu
 
 - **Klavye sekmesi:** 104 tuşun tamamı fiziksel satırlara göre 7 × 17 ızgarada

@@ -49,7 +49,7 @@ yerleşik PowerShell 5.1 veya üzeri gerekir; ek paket kurulumu yoktur.
 3. Kilit tuşlarında LED'e değil, ekrandaki `TOGGLE` değerine bak.
 4. Testi yarıda kesmek için `Ctrl + Shift + Q` kullan veya **■ Durdur**'a bas.
 
-Sonuçlar `Sonuçlar` sekmesinde, renkli durumlar `Klavye` sekmesinde, ayrıntılı
+Tablo `Sonuçlar` sekmesinde, renkli durumlar `Klavye` sekmesinde, ayrıntılı
 satırlar `Olay Kaydı` sekmesinde görünür.
 
 ## Hakkında bilinmesi gerekenler

@@ -27,7 +27,7 @@ if (-not $appDir -or -not (Test-Path -LiteralPath $appDir)) {
 }
 $configPath = Join-Path $appDir "klavye-testi-ayarlar.json"
 
-# --- Varsayilan ayarlar --------------------------------------------------------
+# --- Varsayılan ayarlar --------------------------------------------------------
 function Get-DefaultResultPath {
     Join-Path (Join-Path ([Environment]::GetFolderPath("Desktop")) "Klavye Testi") "klavye-testi-sonucu.txt"
 }
@@ -128,17 +128,17 @@ function Get-Lock([int]$vk) {
 # --- Turkce Q ozel tuslar ------------------------------------------------------
 $special = @{
     0xC0 = '" / é'      # OEM 3      (1'in solu)
-    0xDF = '* / ?'      # OEM 8      (0'in sagi)
-    0xBD = '- / _'      # OEM MINUS  (*'in sagi)
-    0xDB = 'ğ / Ğ'      # OEM 4      (P'nin sagi)
-    0xDD = 'ü / Ü'      # OEM 6      (ğ'nin sagi)
-    0xBA = 'ş / Ş'      # OEM 1      (L'nin sagi)
-    0xDE = 'i / İ'      # OEM 7      (ş'nin sagi)
-    0xBC = ', / ;'      # OEM COMMA  (i'nin sagi)
-    0xE2 = '< / >'      # OEM 102    (Sol Shift'in sagi)
-    0xBF = 'ö / Ö'      # OEM 2      (M'nin sagi)
-    0xDC = 'ç / Ç'      # OEM 5      (ö'nin sagi)
-    0xBE = '. / :'      # OEM PERIOD (ç'nin sagi)
+    0xDF = '* / ?'      # OEM 8      (0'in sağı)
+    0xBD = '- / _'      # OEM MINUS  (*'in sağı)
+    0xDB = 'ğ / Ğ'      # OEM 4      (P'nin sağı)
+    0xDD = 'ü / Ü'      # OEM 6      (ğ'nin sağı)
+    0xBA = 'ş / Ş'      # OEM 1      (L'nin sağı)
+    0xDE = 'i / İ'      # OEM 7      (ş'nin sağı)
+    0xBC = ', / ;'      # OEM COMMA  (i'nin sağı)
+    0xE2 = '< / >'      # OEM 102    (Sol Shift'in sağı)
+    0xBF = 'ö / Ö'      # OEM 2      (M'nin sağı)
+    0xDC = 'ç / Ç'      # OEM 5      (ö'nin sağı)
+    0xBE = '. / :'      # OEM PERIOD (ç'nin sağı)
 }
 $specialVks = [int[]]$special.Keys
 
@@ -151,19 +151,19 @@ function New-Steps($cfg) {
     }
 
     # 1) Fonksiyon satiri
-    AddOne 0x1B "Esc" "Fonksiyon" "Sol ust"
-    for ($n=0x70; $n -le 0x7B; $n++) { AddOne $n ("F"+[string]($n-0x70+1)) "Fonksiyon" "Esc'nin saginda" }
+    AddOne 0x1B "Esc" "Fonksiyon" "Sol üst"
+    for ($n=0x70; $n -le 0x7B; $n++) { AddOne $n ("F"+[string]($n-0x70+1)) "Fonksiyon" "Esc'nin sağında" }
     AddOne 0x2C "PrintScreen" "Fonksiyon"
-    AddOne 0x90 "NumLock" "Fonksiyon" "LED'e bakma, TOGGLE kaydina bak"
+    AddOne 0x90 "NumLock" "Fonksiyon" "LED'e bakma, TOGGLE kaydına bak"
     AddOne 0x91 "ScrollLock" "Fonksiyon"
-    AddOne 0 "Pause / Break" "Fonksiyon" "Olmazsa Fn+Pause dene (Fn gorunmez)" $false 0 "Pause"
+    AddOne 0 "Pause / Break" "Fonksiyon" "Olmazsa Fn+Pause dene (Fn görünmez)" $false 0 "Pause"
 
     # 2) Rakam satiri
     AddOne 0xC0 '" / é (OEM 3)' "Rakam satiri" "1'in solu"
     for ($n=0x31; $n -le 0x39; $n++) { AddOne $n ([string][char]$n) "Rakam satiri" }
     AddOne 0x30 "0" "Rakam satiri"
-    AddOne 0xDF '* / ? (OEM 8)' "Rakam satiri" "0'in sagi"
-    AddOne 0xBD '- / _ (OEM Minus)' "Rakam satiri" "*'in sagi"
+    AddOne 0xDF '* / ? (OEM 8)' "Rakam satiri" "0'ın sağı"
+    AddOne 0xBD '- / _ (OEM Minus)' "Rakam satiri" "*'in sağı"
     AddOne 0x08 "Backspace" "Rakam satiri"
     AddOne 0x2D "Insert" "Rakam satiri"
     AddOne 0x24 "Home" "Rakam satiri"
@@ -176,33 +176,33 @@ function New-Steps($cfg) {
     AddOne 0x54 "T" "Q satiri"; AddOne 0x59 "Y" "Q satiri"
     AddOne 0x55 "U" "Q satiri"; AddOne 0x49 "I / ı" "Q satiri"
     AddOne 0x4F "O" "Q satiri"; AddOne 0x50 "P" "Q satiri"
-    AddOne 0xDB 'ğ / Ğ (OEM 4)' "Q satiri" "P'nin sagi"
-    AddOne 0xDD 'ü / Ü (OEM 6)' "Q satiri" "ğ'nin sagi"
+    AddOne 0xDB 'ğ / Ğ (OEM 4)' "Q satiri" "P'nin sağı"
+    AddOne 0xDD 'ü / Ü (OEM 6)' "Q satiri" "ğ'nin sağı"
     AddOne 0x0D "Enter" "Q satiri"
     AddOne 0x2E "Delete" "Q satiri"; AddOne 0x23 "End" "Q satiri"
     AddOne 0x22 "PageDown" "Q satiri"
 
     # 4) A satiri
-    AddOne 0x14 "CapsLock" "A satiri" "Tab'in alti"
+    AddOne 0x14 "CapsLock" "A satiri" "Tab'in altı"
     AddOne 0x41 "A" "A satiri"; AddOne 0x53 "S" "A satiri"
     AddOne 0x44 "D" "A satiri"; AddOne 0x46 "F" "A satiri"
     AddOne 0x47 "G" "A satiri"; AddOne 0x48 "H" "A satiri"
     AddOne 0x4A "J" "A satiri"; AddOne 0x4B "K" "A satiri"
     AddOne 0x4C "L" "A satiri"
-    AddOne 0xBA 'ş / Ş (OEM 1)' "A satiri" "L'nin sagi"
-    AddOne 0xDE 'i / İ (OEM 7)' "A satiri" "ş'nin sagi"
-    AddOne 0xBC ', / ; (OEM Comma)' "A satiri" "i'nin sagi, Enter'in solu"
+    AddOne 0xBA 'ş / Ş (OEM 1)' "A satiri" "L'nin sağı"
+    AddOne 0xDE 'i / İ (OEM 7)' "A satiri" "ş'nin sağı"
+    AddOne 0xBC ', / ; (OEM Comma)' "A satiri" "i'nin sağı, Enter'in solu"
 
     # 5) Z satiri
     AddOne 0xA0 "Sol Shift" "Z satiri"
-    AddOne 0xE2 '< / > (OEM 102)' "Z satiri" "Sol Shift'in sagi"
+    AddOne 0xE2 '< / > (OEM 102)' "Z satiri" "Sol Shift'in sağı"
     AddOne 0x5A "Z" "Z satiri"; AddOne 0x58 "X" "Z satiri"
     AddOne 0x43 "C" "Z satiri"; AddOne 0x56 "V" "Z satiri"
     AddOne 0x42 "B" "Z satiri"; AddOne 0x4E "N" "Z satiri"
     AddOne 0x4D "M" "Z satiri"
-    AddOne 0xBF 'ö / Ö (OEM 2)' "Z satiri" "M'nin sagi"
-    AddOne 0xDC 'ç / Ç (OEM 5)' "Z satiri" "ö'nin sagi"
-    AddOne 0xBE '. / : (OEM Period)' "Z satiri" "ç'nin sagi"
+    AddOne 0xBF 'ö / Ö (OEM 2)' "Z satiri" "M'nin sağı"
+    AddOne 0xDC 'ç / Ç (OEM 5)' "Z satiri" "ö'nin sağı"
+    AddOne 0xBE '. / : (OEM Period)' "Z satiri" "ç'nin sağı"
     AddOne 0xA1 "Sağ Shift" "Z satiri"
     AddOne 0x26 "Yukarı ok" "Z satiri"
 
@@ -445,22 +445,30 @@ $btnStop.Enabled = $false
 $tool.Items.AddRange(@($btnStart, $btnStop, $btnSettings, $btnClear))
 $mainForm.Controls.Add($tool)
 
-$barPanel = New-Object System.Windows.Forms.Panel
+# Yuzde yazisi ProgressBar'in ustune binmesin: iki ayri sutun kullan.
+# (Update: Transparent Label, barin dolgusunu kendi arka planiyla kapatıyordu.)
+$barPanel = New-Object System.Windows.Forms.TableLayoutPanel
 $barPanel.Dock = "Top"
 $barPanel.Height = 20
-$bar = New-Object System.Windows.Forms.ProgressBar
-$bar.Dock = "Fill"
-$bar.Minimum = 0
-$bar.Maximum = 100
+$barPanel.ColumnCount = 2
+$barPanel.RowCount = 1
+[void]$barPanel.ColumnStyles.Add((New-Object System.Windows.Forms.ColumnStyle([System.Windows.Forms.SizeType]::Absolute, 46)))
+[void]$barPanel.ColumnStyles.Add((New-Object System.Windows.Forms.ColumnStyle([System.Windows.Forms.SizeType]::Percent, 100)))
+[void]$barPanel.RowStyles.Add((New-Object System.Windows.Forms.RowStyle([System.Windows.Forms.SizeType]::Percent, 100)))
 $lblPercent = New-Object System.Windows.Forms.Label
 $lblPercent.Dock = "Fill"
+$lblPercent.Margin = New-Object System.Windows.Forms.Padding(0)
 $lblPercent.TextAlign = [System.Drawing.ContentAlignment]::MiddleCenter
 $lblPercent.Text = "0%"
-$lblPercent.BackColor = [System.Drawing.Color]::Transparent
 $lblPercent.ForeColor = $accentText
 $lblPercent.Font = New-Object System.Drawing.Font("Segoe UI", 8, [System.Drawing.FontStyle]::Bold)
-$barPanel.Controls.Add($bar)
-$barPanel.Controls.Add($lblPercent)
+$bar = New-Object System.Windows.Forms.ProgressBar
+$bar.Dock = "Fill"
+$bar.Margin = New-Object System.Windows.Forms.Padding(0)
+$bar.Minimum = 0
+$bar.Maximum = 100
+$barPanel.Controls.Add($lblPercent, 0, 0)
+$barPanel.Controls.Add($bar, 1, 0)
 $mainForm.Controls.Add($barPanel)
 
 $tabMain = New-Object System.Windows.Forms.TabControl
@@ -526,6 +534,8 @@ $lblEmpty.Text = "Henüz test yapılmadı.`r`n`r`nBaşlat'a basın; sonra ekrand
 $lblEmpty.Font = New-Object System.Drawing.Font("Segoe UI", 12)
 $lblEmpty.ForeColor = [System.Drawing.Color]::FromArgb(140, 140, 140)
 $tabResults.Controls.Add($lblEmpty)
+# Ayni z-order hatasi: etiket tablonun arkasinda kalmamali.
+$lblEmpty.BringToFront()
 
 $txtLog = New-Object System.Windows.Forms.TextBox
 $txtLog.Multiline = $true
@@ -563,7 +573,7 @@ $lblCredit1.Font = New-Object System.Drawing.Font("Segoe UI", 9, [System.Drawing
 $creditPanel.Controls.Add($lblCredit1)
 
 # Dock sirasi onemli: Fill ilk eklenir, Right sonra eklenir; aksi halde
-# Fill tum genisligi kapar ve imza satiri ustune biner (gorunmez olur).
+# Fill tüm genişliği kapar ve imza satırı üstüne biner (görünmez olur).
 $lblStats = New-Object System.Windows.Forms.Label
 $lblStats.Dock = "Fill"
 $lblStats.TextAlign = "MiddleLeft"
@@ -878,7 +888,7 @@ function Show-Settings {
     Numeric "İpucu penceresi yükseklik" 16 $y 100 800 $script:cfg.HintHeight "nudH"; $y += 28
 
     Check "İpucu penceresi her zaman üstte" 16 $y ([bool]$script:cfg.HintTopMost) "chkTop"; $y += 24
-    Check "Sesli geri bildirim (OK / YOK) - varsayilan kapali" 16 $y ([bool]$script:cfg.SoundOn) "chkSound"; $y += 24
+    Check "Sesli geri bildirim (OK / YOK) - varsayılan kapalı" 16 $y ([bool]$script:cfg.SoundOn) "chkSound"; $y += 24
     Check "Yanlış tuş uyuşmazlıklarını kaydet" 16 $y ([bool]$script:cfg.LogMismatch) "chkMismatch"; $y += 24
     Check "Koyu tema" 16 $y ([bool]$script:cfg.DarkTheme) "chkDark"; $y += 24
     Check "Sonucu otomatik kaydet" 16 $y ([bool]$script:cfg.AutoSave) "chkAutoSave"; $y += 24
